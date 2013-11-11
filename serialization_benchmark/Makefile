@@ -4,10 +4,17 @@ THRIFT_LDFLAGS := $(shell pkg-config --libs thrift)
 PROTOBUF_CXXFLAGS := $(shell pkg-config --cflags protobuf) -O3
 PROTOBUF_LDFLAGS := $(shell pkg-config --libs protobuf)
 
-all: test_protobuf test_thrift
+CAPNP_CXXFLAGS := -std=c++11 -O3
+CAPNP_LDFLAGS := -lcapnp -lrt
+
+all: test_protobuf test_thrift test_capnp
 
 thrift_compile: small_message.thrift
 	thrift --gen cpp small_message.thrift 
+
+capnp_compile: small_message.capnp
+	mkdir -p capnpcpp
+	capnp compile -oc++:capnpcpp small_message.capnp
 
 protobuf_compile: small_message.proto
 	mkdir -p protocpp
@@ -31,5 +38,15 @@ test_protobuf.o: test_protobuf.cpp protobuf_compile
 small_message.pb.o: protobuf_compile
 	$(CXX) $(PROTOBUF_CXXFLAGS) -c protocpp/small_message.pb.cc
 
+test_capnp.o: test_capnp.cpp capnp_compile
+	$(CXX) $(CAPNP_CXXFLAGS) -c test_capnp.cpp
+
+small_message_capnp.o: capnp_compile
+	$(CXX) $(CAPNP_CXXFLAGS) -o small_message_capnp.o -c capnpcpp/small_message.capnp.c++
+
+test_capnp: test_capnp.o small_message_capnp.o
+	$(CXX) test_capnp.o small_message_capnp.o -o test_capnp $(CAPNP_LDFLAGS)
+
+
 clean:
-	rm -rf test_thrift test_protobuf gen-cpp protocpp *.o
+	rm -rf test_thrift test_protobuf test_capnp gen-cpp protocpp capnpcpp *.o
