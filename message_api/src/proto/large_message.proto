@@ -1,0 +1,3 @@
+message LargeMessage {
+    required bytes baz = 1;
+}
