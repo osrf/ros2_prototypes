@@ -7,7 +7,8 @@
 
 int main(void) {
     long loop_count = 1000000000;
-    std::cout << "Loop count: " << loop_count << std::endl;
+    std::cout << "Serializing " << loop_count <<
+        " messages with Protobuf (stringstream)" << std::endl;
     std::stringstream ss;
     SmallMessage msg;
     msg.set_foo(42);

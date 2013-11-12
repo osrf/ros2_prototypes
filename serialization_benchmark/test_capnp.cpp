@@ -15,28 +15,29 @@
 
 class StringOutputStream: public kj::OutputStream {
 public:
-  explicit StringOutputStream(std::stringstream *ss_);
+  explicit StringOutputStream() {}
   KJ_DISALLOW_COPY(StringOutputStream);
-  ~StringOutputStream() noexcept(false);
+  ~StringOutputStream() noexcept(false) {}
 
-  void write(const void* buffer, size_t size) override;
+  void write(const void* buffer, size_t size) override {
+    ss.write(reinterpret_cast<const char*>(buffer), size);
+  }
+
+  void reset() {
+      ss.str("");
+      ss.clear();
+  }
 
 private:
-  std::stringstream *ss;
+  std::stringstream ss;
 };
-
-StringOutputStream::StringOutputStream(std::stringstream *ss_): ss(ss_) {}
-StringOutputStream::~StringOutputStream() noexcept(false) {}
-
-void StringOutputStream::write(const void* src, size_t size) {
-    ss->write(static_cast<const char*>(src), size);
-}
 
 
 int main(void) {
     long loop_count = 1000000000;
 
-    std::cout << "Loop count: " << loop_count << std::endl;
+    std::cout << "Serializing " << loop_count <<
+        " messages with Cap'n'proto (stringstream)" << std::endl;
 
     ::capnp::MallocMessageBuilder message;
 
@@ -49,14 +50,10 @@ int main(void) {
 
     gettimeofday(&start, NULL);
 
-    unsigned char scratch[14096];
-    std::stringstream ss;
-
-    StringOutputStream sos(&ss);
+    StringOutputStream sos;
 
     for(long i = 0; i < loop_count; ++i) {
-        ss.str(std::string());
-        ss.clear();
+        sos.reset();
         writeMessage(sos, message);
     }
 
