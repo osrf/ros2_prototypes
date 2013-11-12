@@ -4,8 +4,8 @@ THRIFT_LDFLAGS := $(shell pkg-config --libs thrift)
 PROTOBUF_CXXFLAGS := $(shell pkg-config --cflags protobuf) -O3
 PROTOBUF_LDFLAGS := $(shell pkg-config --libs protobuf)
 
-CAPNP_CXXFLAGS := -std=c++11 -O3
-CAPNP_LDFLAGS := -lcapnp -lrt
+CAPNP_CXXFLAGS := -DNDEBUG -std=c++11 -O3
+CAPNP_LDFLAGS := -lcapnp -lrt -lkj
 
 all: test_protobuf test_thrift test_capnp
 

@@ -12,6 +12,27 @@
 #include <iostream>
 #include <sstream>
 
+
+class StringOutputStream: public kj::OutputStream {
+public:
+  explicit StringOutputStream(std::stringstream *ss_);
+  KJ_DISALLOW_COPY(StringOutputStream);
+  ~StringOutputStream() noexcept(false);
+
+  void write(const void* buffer, size_t size) override;
+
+private:
+  std::stringstream *ss;
+};
+
+StringOutputStream::StringOutputStream(std::stringstream *ss_): ss(ss_) {}
+StringOutputStream::~StringOutputStream() noexcept(false) {}
+
+void StringOutputStream::write(const void* src, size_t size) {
+    ss->write(static_cast<const char*>(src), size);
+}
+
+
 int main(void) {
     long loop_count = 1000000000;
 
@@ -28,13 +49,15 @@ int main(void) {
 
     gettimeofday(&start, NULL);
 
-    shm_unlink("/capnptest");
+    unsigned char scratch[14096];
+    std::stringstream ss;
+
+    StringOutputStream sos(&ss);
+
     for(long i = 0; i < loop_count; ++i) {
-        int fd = shm_open("/capnptest", (O_CREAT | O_EXCL | O_RDWR),
-            (S_IREAD | S_IWRITE));
-        writePackedMessageToFd(fd, message);
-        close(fd);
-        shm_unlink("/capnptest");
+        ss.str(std::string());
+        ss.clear();
+        writeMessage(sos, message);
     }
 
     gettimeofday(&end, NULL);
