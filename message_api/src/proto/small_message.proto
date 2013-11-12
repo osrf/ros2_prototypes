@@ -1,0 +1,4 @@
+message SmallMessage {
+    required int32 foo = 1;
+    required bool bar = 2;
+}

@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 
     LargeMessage_Struct msg;
 
-    std::stringstream ss;
+    //std::stringstream ss;
 
     timespec start;
     clock_gettime(CLOCK_REALTIME, &start);
@@ -27,13 +27,13 @@ int main(int argc, char** argv) {
     }
     for (int i = 1; i < loop_count; i++)
     {
-        ss.str("");
-        ss.clear();
+        //ss.str("");
+        //ss.clear();
 
         // produce
-        msg.baz[i % sizeof(msg.baz)] = (char)i; // (char)(((int)msg.baz[(i - 1) % sizeof(msg.baz)]) + (int)(msg.baz[i % sizeof(msg.baz)]));
+        msg.baz[i % sizeof(msg.baz)] = (char)(((int)msg.baz[(i - 1) % sizeof(msg.baz)]) + (int)(msg.baz[i % sizeof(msg.baz)]));
 
-        ss << msg.baz;
+        //ss << msg.baz;
         // consume
         //if (msg.foo != i) return 1;
         //if (msg.bar != i % 2) return 1;
