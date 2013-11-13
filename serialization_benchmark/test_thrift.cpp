@@ -35,7 +35,8 @@ class TStringStream : public TTransport {
 
 
 template <typename T>
-void serialize(long loop_count, boost::shared_ptr<T> transport) {
+void serialize(long loop_count) {
+    boost::shared_ptr<T> transport(new T());
     TBinaryProtocol oprot(transport);
     transport->open();
     SmallMessage msg;
@@ -64,13 +65,11 @@ int main(void) {
     long loop_count = 1000000000;
     std::cout << "Serializing " << loop_count <<
         " messages with Thrift (stringstream)" << std::endl;
-    boost::shared_ptr<TStringStream> transport1(new TStringStream());
-    serialize<TStringStream>(loop_count, transport1);
+    serialize<TStringStream>(loop_count);
 
     std::cout << "Serializing " << loop_count <<
         " messages with Thrift (TMemoryBuffer)" << std::endl;
-    boost::shared_ptr<TMemoryBuffer> transport2(new TMemoryBuffer());
-    serialize<TMemoryBuffer>(loop_count, transport2);
+    serialize<TMemoryBuffer>(loop_count);
 
     return 0;
 }
