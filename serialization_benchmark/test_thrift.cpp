@@ -34,11 +34,8 @@ class TStringStream : public TTransport {
 };
 
 
-int main(void) {
-    long loop_count = 1000000000;
-    std::cout << "Serializing " << loop_count <<
-        " messages with Thrift (stringstream)" << std::endl;
-    boost::shared_ptr<TStringStream> transport(new TStringStream());
+template <typename T>
+void serialize(long loop_count, boost::shared_ptr<T> transport) {
     TBinaryProtocol oprot(transport);
     transport->open();
     SmallMessage msg;
@@ -60,6 +57,20 @@ int main(void) {
         (start.tv_sec * (unsigned int)1e6 + start.tv_usec);
 
     std::cout << "Time (microseconds): " << time << std::endl;
+}
+
+
+int main(void) {
+    long loop_count = 1000000000;
+    std::cout << "Serializing " << loop_count <<
+        " messages with Thrift (stringstream)" << std::endl;
+    boost::shared_ptr<TStringStream> transport1(new TStringStream());
+    serialize<TStringStream>(loop_count, transport1);
+
+    std::cout << "Serializing " << loop_count <<
+        " messages with Thrift (TMemoryBuffer)" << std::endl;
+    boost::shared_ptr<TMemoryBuffer> transport2(new TMemoryBuffer());
+    serialize<TMemoryBuffer>(loop_count, transport2);
 
     return 0;
 }
