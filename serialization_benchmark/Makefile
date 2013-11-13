@@ -7,7 +7,13 @@ PROTOBUF_LDFLAGS := $(shell pkg-config --libs protobuf)
 CAPNP_CXXFLAGS := -DNDEBUG -std=c++11 -O3
 CAPNP_LDFLAGS := -lcapnp -lrt -lkj
 
-all: test_protobuf test_thrift test_capnp
+benchmar: build
+	./test_protobuf
+	./test_thrift
+	./test_capnp
+	./test_rosmsg
+
+build: test_protobuf test_thrift test_capnp test_rosmsg
 
 thrift_compile: small_message.thrift
 	thrift --gen cpp small_message.thrift 
@@ -47,6 +53,9 @@ small_message_capnp.o: capnp_compile
 test_capnp: test_capnp.o small_message_capnp.o
 	$(CXX) test_capnp.o small_message_capnp.o -o test_capnp $(CAPNP_LDFLAGS)
 
+test_rosmsg: src/rosmsg_benchmark/src/test_rosmsg.cpp
+	catkin_make
+	cp devel/lib/rosmsg_benchmark/test_rosmsg test_rosmsg
 
 clean:
-	rm -rf test_thrift test_protobuf test_capnp gen-cpp protocpp capnpcpp *.o
+	rm -rf test_rosmsg test_thrift test_protobuf test_capnp gen-cpp protocpp capnpcpp build devel src/CMakeLists *.o
