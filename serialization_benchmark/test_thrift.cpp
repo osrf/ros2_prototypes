@@ -7,6 +7,8 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
 #include <sstream>
+#include <string>
+#include <fstream>
 
 using namespace apache::thrift;
 using namespace apache::thrift::protocol;
@@ -34,14 +36,11 @@ class TStringStream : public TTransport {
 };
 
 
-template <typename T>
-void serialize(long loop_count) {
+template <typename T, typename M>
+void serialize(long loop_count, M& msg) {
     boost::shared_ptr<T> transport(new T());
     TBinaryProtocol oprot(transport);
     transport->open();
-    SmallMessage msg;
-    msg.foo = 42;
-    msg.bar = true;
  
     struct timeval start, end;
 
@@ -63,13 +62,30 @@ void serialize(long loop_count) {
 
 int main(void) {
     long loop_count = 1000000000;
-    std::cout << "Serializing " << loop_count <<
-        " messages with Thrift (stringstream)" << std::endl;
-    serialize<TStringStream>(loop_count);
+    SmallMessage small_msg;
+    small_msg.foo = 42;
+    small_msg.bar = true;
 
     std::cout << "Serializing " << loop_count <<
-        " messages with Thrift (TMemoryBuffer)" << std::endl;
-    serialize<TMemoryBuffer>(loop_count);
+        " small messages with Thrift (stringstream)" << std::endl;
+    serialize<TStringStream, SmallMessage>(loop_count, small_msg);
+
+    std::cout << "Serializing " << loop_count <<
+        " small messages with Thrift (TMemoryBuffer)" << std::endl;
+    serialize<TMemoryBuffer, SmallMessage>(loop_count, small_msg);
+
+    LargeMessage large_msg;
+    std::ifstream ifs("image.bmp");
+    large_msg.baz = std::string((std::istreambuf_iterator<char>(ifs)),
+        (std::istreambuf_iterator<char>()));
+
+    std::cout << "Serializing " << loop_count <<
+        " large messages with Thrift (stringstream)" << std::endl;
+    serialize<TStringStream, LargeMessage>(loop_count, large_msg);
+
+    std::cout << "Serializing " << loop_count <<
+        " large messages with Thrift (TMemoryBuffer)" << std::endl;
+    serialize<TMemoryBuffer, LargeMessage>(loop_count, large_msg);
 
     return 0;
 }

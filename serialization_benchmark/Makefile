@@ -7,7 +7,7 @@ PROTOBUF_LDFLAGS := $(shell pkg-config --libs protobuf)
 CAPNP_CXXFLAGS := -DNDEBUG -std=c++11 -O3
 CAPNP_LDFLAGS := -lcapnp -lrt -lkj
 
-benchmar: build
+benchmark: build
 	./test_protobuf
 	./test_thrift
 	./test_capnp
