@@ -32,24 +32,26 @@ void serialize(long loop_count, M& msg) {
 }
 
 int main(void) {
-    long loop_count = 1000000000;
+    long loop_count1 = 1000000000;
 
     SmallMessage small_msg;
     small_msg.foo = 42;
     small_msg.bar = true;
 
-    std::cout << "Serializing " << loop_count <<
+    std::cout << "Serializing " << loop_count1 <<
         " small messages with ROSMsg (OStream)" << std::endl;
-    serialize<SmallMessage>(loop_count, small_msg);
+    serialize<SmallMessage>(loop_count1, small_msg);
 
     LargeMessage large_msg;
     std::ifstream ifs("image.bmp");
     large_msg.baz = std::string((std::istreambuf_iterator<char>(ifs)),
         (std::istreambuf_iterator<char>()));
 
-    std::cout << "Serializing " << loop_count <<
+    long loop_count2 = 1000000;
+
+    std::cout << "Serializing " << loop_count2 <<
         " large messages with ROSMsg (OStream)" << std::endl;
-    serialize<LargeMessage>(loop_count, large_msg);
+    serialize<LargeMessage>(loop_count2, large_msg);
 
     return 0;
 }

@@ -108,7 +108,7 @@ void serialize(long loop_count, M& msg, ::capnp::MallocMessageBuilder& message) 
 }
 
 int main(void) {
-    long loop_count = 1000000000;
+    long loop_count1 = 1000000000;
 
     ::capnp::MallocMessageBuilder message1;
 
@@ -117,13 +117,13 @@ int main(void) {
     small_msg.setFoo(42);
     small_msg.setBar(true);
 
-    std::cout << "Serializing " << loop_count <<
+    std::cout << "Serializing " << loop_count1 <<
         " small messages with Cap'n'proto (stringstream)" << std::endl;
-    serialize<StringOutputStream, SmallMessage::Builder>(loop_count, small_msg, message1);
+    serialize<StringOutputStream, SmallMessage::Builder>(loop_count1, small_msg, message1);
 
-    std::cout << "Serializing " << loop_count <<
+    std::cout << "Serializing " << loop_count1 <<
         " small messages with Cap'n'proto (MemoryStream)" << std::endl;
-    serialize<MemoryOutputStream, SmallMessage::Builder>(loop_count, small_msg, message1);
+    serialize<MemoryOutputStream, SmallMessage::Builder>(loop_count1, small_msg, message1);
 
     ::capnp::MallocMessageBuilder message2;
 
@@ -134,13 +134,15 @@ int main(void) {
     const byte *data = reinterpret_cast<const byte *>(content.c_str());
     large_msg.setBaz(::capnp::Data::Reader(data, content.length()));
 
-    std::cout << "Serializing " << loop_count <<
-        " large messages with Cap'n'proto (stringstream)" << std::endl;
-    serialize<StringOutputStream, LargeMessage::Builder>(loop_count, large_msg, message2);
+    long loop_count2 = 1000000;
 
-    std::cout << "Serializing " << loop_count <<
+    std::cout << "Serializing " << loop_count2 <<
+        " large messages with Cap'n'proto (stringstream)" << std::endl;
+    serialize<StringOutputStream, LargeMessage::Builder>(loop_count2, large_msg, message2);
+
+    std::cout << "Serializing " << loop_count2 <<
         " large messages with Cap'n'proto (MemoryStream)" << std::endl;
-    serialize<MemoryOutputStream, LargeMessage::Builder>(loop_count, large_msg, message2);
+    serialize<MemoryOutputStream, LargeMessage::Builder>(loop_count2, large_msg, message2);
 
 
     return 0;
