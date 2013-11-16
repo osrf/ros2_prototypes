@@ -46,21 +46,21 @@ class _FooPlainStorage(object):
     # bar and baz can be members as well, we are just using properties to be
     # to inject code
 
-    def getbar(self):
+    def get_bar(self):
         return self._bar
 
-    def setbar(self, value):
+    def set_bar(self, value):
         self._bar = value
 
-    bar = property(getbar, setbar)
+    bar = property(get_bar, set_bar)
 
-    def getbaz(self):
+    def get_baz(self):
         return self._baz
 
-    def setbaz(self, value):
+    def set_baz(self, value):
         self._baz = value
 
-    baz = property(getbaz, setbaz)
+    baz = property(get_baz, set_baz)
 
 
 class Foo(object):
